@@ -11,6 +11,20 @@
 #
 # Every press increments a capture sequence number so Home Assistant always
 # receives a visibly different state, even if every HVAC value is unchanged.
+#
+# Validated ACiQ C4 B16 operating-mode/state observations (2026-08-19):
+#   OFF      = 0x01
+#   FAN ONLY = 0x81
+#   DRY      = 0x82
+#   HEAT     = 0x84
+#   COOL     = 0x88
+#   AUTO     = 0x90
+# C0 AUTO was observed as 0x98 on this unit. Raw values remain in snapshots so
+# future captures can challenge these interpretations rather than hiding them.
+#
+# C0 B28/B29 remains a refrigeration-control candidate only. It modulates in
+# COOL/DRY/AUTO but remained parked at 480 throughout observed HEAT operation,
+# so it is intentionally not promoted to a confirmed EEV-position label.
 
 globals:
   - id: xye_snapshot_sequence
@@ -36,22 +50,25 @@ button:
           ESP_LOGI("xye_snapshot", "Capture requested: #%lu; waiting for fresh C0/C4 polls", (unsigned long) id(xye_snapshot_sequence));
       - delay: 2500ms
       - lambda: |-
-          char buf[255];
+          char buf[340];
           snprintf(
             buf,
             sizeof(buf),
-            "#%lu | OP=%s | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | EEV=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4SYS=%.0f | T4RAW=%.0f",
+            "#%lu | OP=%s | C0OP=0x%02X | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | RCAND=%.0f | B28=%.0f | B29=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4MODE=0x%02X | T4RAW=%.0f",
             (unsigned long) id(xye_snapshot_sequence),
             id(xye_operation_mode_text).state.c_str(),
+            (unsigned int) lroundf(id(xye_c0_b08_operation_mode).state),
             id(xye_actual_fan_mode_text).state.c_str(),
             id(xye_physical_fan_speed_text).state.c_str(),
             id(xye_target_fan_mode_text).state.c_str(),
             id(xye_c0_b19_compressor_flag).state,
             id(xye_c0_candidate_eev_le).state,
+            id(xye_c0_b28_unknown5).state,
+            id(xye_c0_b29_unknown6).state,
             id(xye_c4_b19_20_engineering_be).state,
             id(xye_c4_b08_compressor_flags).state,
             id(xye_c4_b10_protection_flags).state,
-            id(xye_c4_b16_system_status).state,
+            (unsigned int) lroundf(id(xye_c4_b16_system_status).state),
             id(xye_c4_b21_outdoor_temp_raw).state
           );
 
