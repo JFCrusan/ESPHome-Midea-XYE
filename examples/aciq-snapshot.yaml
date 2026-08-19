@@ -4,9 +4,10 @@
 #   - button.capture_xye_snapshot
 #   - text_sensor.xye_snapshot
 #
-# Press the button after each test state settles. The latest important values
-# are condensed into a single copy/paste-friendly line and also written to the
-# ESPHome log as "XYE SNAPSHOT: ...".
+# Press the button after each test state settles. The helper waits 2.5 seconds
+# before assembling the snapshot so the normal alternating C0/C4 poll cycle has
+# time to refresh both halves of the diagnostic state. The resulting line is
+# also written to the ESPHome log as "XYE SNAPSHOT: ...".
 #
 # Every press increments a capture sequence number so Home Assistant always
 # receives a visibly different state, even if every HVAC value is unchanged.
@@ -32,8 +33,9 @@ button:
     on_press:
       - lambda: |-
           id(xye_snapshot_sequence) += 1;
-          ESP_LOGI("xye_snapshot", "Capture button pressed: #%lu", (unsigned long) id(xye_snapshot_sequence));
-
+          ESP_LOGI("xye_snapshot", "Capture requested: #%lu; waiting for fresh C0/C4 polls", (unsigned long) id(xye_snapshot_sequence));
+      - delay: 2500ms
+      - lambda: |-
           char buf[255];
           snprintf(
             buf,
