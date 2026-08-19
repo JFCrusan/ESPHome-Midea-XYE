@@ -7,6 +7,15 @@
 # Press the button after each test state settles. The latest important values
 # are condensed into a single copy/paste-friendly line and also written to the
 # ESPHome log as "XYE SNAPSHOT: ...".
+#
+# Every press increments a capture sequence number so Home Assistant always
+# receives a visibly different state, even if every HVAC value is unchanged.
+
+globals:
+  - id: xye_snapshot_sequence
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
 
 text_sensor:
   - platform: template
@@ -22,11 +31,15 @@ button:
     icon: mdi:camera-outline
     on_press:
       - lambda: |-
+          id(xye_snapshot_sequence) += 1;
+          ESP_LOGI("xye_snapshot", "Capture button pressed: #%lu", (unsigned long) id(xye_snapshot_sequence));
+
           char buf[255];
           snprintf(
             buf,
             sizeof(buf),
-            "OP=%s | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | EEV=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4SYS=%.0f | T4RAW=%.0f",
+            "#%lu | OP=%s | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | EEV=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4SYS=%.0f | T4RAW=%.0f",
+            (unsigned long) id(xye_snapshot_sequence),
             id(xye_operation_mode_text).state.c_str(),
             id(xye_actual_fan_mode_text).state.c_str(),
             id(xye_physical_fan_speed_text).state.c_str(),
