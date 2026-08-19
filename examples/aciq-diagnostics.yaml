@@ -1,0 +1,325 @@
+# ACiQ / Midea XYE diagnostic capture profile
+#
+# Purpose: expose raw C0 and C4 receive fields to Home Assistant without
+# changing the midea_xye component's control behavior. This is intentionally
+# raw-first: uncertain fields stay named by absolute byte position until they
+# are validated against controlled operating-state captures.
+#
+# Usage:
+#   1. In your midea_xye climate entry, add:
+#        id: heatpump_xye
+#   2. Merge the sensor: and interval: sections below into your ESPHome node.
+#   3. Keep the component polling C0/C4 normally (period: 1s is fine).
+#
+# The interval computes a small FNV-1a fingerprint of bytes 0..29 and only
+# publishes when a new C0 or C4 payload is observed, avoiding HA update spam.
+
+sensor:
+  # ---------- C0 QUERY: absolute bytes 6..29 ----------
+  - platform: template
+    id: xye_c0_b06_unknown1
+    name: "XYE C0 B06 Unknown1"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b07_capabilities
+    name: "XYE C0 B07 Capabilities Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b08_operation_mode
+    name: "XYE C0 B08 Operation Mode Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b09_fan_mode
+    name: "XYE C0 B09 Fan Mode Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_fan_auto_flag
+    name: "XYE C0 Fan Auto Flag"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_fan_physical_nibble
+    name: "XYE C0 Physical Fan Nibble"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b10_target_raw
+    name: "XYE C0 B10 Target Temperature Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b15_current_raw
+    name: "XYE C0 B15 Current Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b16_unknown2
+    name: "XYE C0 B16 Unknown2"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b19_compressor_flag
+    name: "XYE C0 B19 Compressor Flag Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b20_mode_flags
+    name: "XYE C0 B20 Mode Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b21_operation_flags
+    name: "XYE C0 B21 Operation Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_error_flags_raw
+    name: "XYE C0 B22-23 Error Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_protect_flags_raw
+    name: "XYE C0 B24-25 Protect Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b26_ccm_error
+    name: "XYE C0 B26 CCM Error Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b27_unknown4
+    name: "XYE C0 B27 Unknown4"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b28_unknown5
+    name: "XYE C0 B28 Unknown5"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_b29_unknown6
+    name: "XYE C0 B29 Unknown6"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c0_candidate_eev_le
+    name: "XYE C0 Candidate EEV Position LE"
+    icon: mdi:valve
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+
+  # ---------- C4 QUERY_EXTENDED: absolute bytes 6..29 ----------
+  - platform: template
+    id: xye_c4_b06_indoor_fan_pwm
+    name: "XYE C4 B06 Indoor Fan PWM Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b07_indoor_fan_tach
+    name: "XYE C4 B07 Indoor Fan Tach Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b08_compressor_flags
+    name: "XYE C4 B08 Compressor Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b09_esp_profile
+    name: "XYE C4 B09 ESP Profile Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b10_protection_flags
+    name: "XYE C4 B10 Protection Flags Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b11_coil_inlet_raw
+    name: "XYE C4 B11 Coil Inlet Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b12_coil_outlet_raw
+    name: "XYE C4 B12 Coil Outlet Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b13_discharge_raw
+    name: "XYE C4 B13 Discharge Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b14_expansion_valve_raw
+    name: "XYE C4 B14 Expansion Valve Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b16_system_status
+    name: "XYE C4 B16 System Status Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b17_target_fan
+    name: "XYE C4 B17 Target Fan Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b18_target_temp_raw
+    name: "XYE C4 B18 Target Temperature Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b19_20_engineering_be
+    name: "XYE C4 B19-20 Engineering Word BE"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b21_outdoor_temp_raw
+    name: "XYE C4 B21 Outdoor Temperature Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b24_static_pressure
+    name: "XYE C4 B24 Static Pressure Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b26_compressor_subsystem
+    name: "XYE C4 B26 Compressor Subsystem Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b27_outdoor_fan_subsystem
+    name: "XYE C4 B27 Outdoor Fan Subsystem Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b28_4way_subsystem
+    name: "XYE C4 B28 4-Way Valve Subsystem Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_c4_b29_inverter_subsystem
+    name: "XYE C4 B29 Inverter Subsystem Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+
+globals:
+  - id: xye_diag_last_c0_hash
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: xye_diag_last_c4_hash
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+
+interval:
+  - interval: 200ms
+    then:
+      - lambda: |-
+          const auto cmd = static_cast<uint8_t>(id(heatpump_xye).rx_data.message.frame.header.command);
+          if (cmd != 0xC0 && cmd != 0xC4) return;
+
+          // FNV-1a over payload/header bytes (CRC/prologue excluded). If the
+          // payload has not changed, there is nothing new to publish.
+          uint32_t hash = 2166136261u;
+          for (int i = 0; i < 30; i++) {
+            hash ^= id(heatpump_xye).rx_data.raw[i];
+            hash *= 16777619u;
+          }
+
+          const uint8_t *b = id(heatpump_xye).rx_data.raw;
+
+          if (cmd == 0xC0) {
+            if (hash == id(xye_diag_last_c0_hash)) return;
+            id(xye_diag_last_c0_hash) = hash;
+
+            id(xye_c0_b06_unknown1).publish_state(b[6]);
+            id(xye_c0_b07_capabilities).publish_state(b[7]);
+            id(xye_c0_b08_operation_mode).publish_state(b[8]);
+            id(xye_c0_b09_fan_mode).publish_state(b[9]);
+            id(xye_c0_fan_auto_flag).publish_state((b[9] & 0x80) ? 1 : 0);
+            id(xye_c0_fan_physical_nibble).publish_state(b[9] & 0x0F);
+            id(xye_c0_b10_target_raw).publish_state(b[10]);
+            id(xye_c0_b15_current_raw).publish_state(b[15]);
+            id(xye_c0_b16_unknown2).publish_state(b[16]);
+            id(xye_c0_b19_compressor_flag).publish_state(b[19]);
+            id(xye_c0_b20_mode_flags).publish_state(b[20]);
+            id(xye_c0_b21_operation_flags).publish_state(b[21]);
+            id(xye_c0_error_flags_raw).publish_state((uint16_t)b[22] | ((uint16_t)b[23] << 8));
+            id(xye_c0_protect_flags_raw).publish_state((uint16_t)b[24] | ((uint16_t)b[25] << 8));
+            id(xye_c0_b26_ccm_error).publish_state(b[26]);
+            id(xye_c0_b27_unknown4).publish_state(b[27]);
+            id(xye_c0_b28_unknown5).publish_state(b[28]);
+            id(xye_c0_b29_unknown6).publish_state(b[29]);
+            id(xye_c0_candidate_eev_le).publish_state((uint16_t)b[28] | ((uint16_t)b[29] << 8));
+            return;
+          }
+
+          if (hash == id(xye_diag_last_c4_hash)) return;
+          id(xye_diag_last_c4_hash) = hash;
+
+          id(xye_c4_b06_indoor_fan_pwm).publish_state(b[6]);
+          id(xye_c4_b07_indoor_fan_tach).publish_state(b[7]);
+          id(xye_c4_b08_compressor_flags).publish_state(b[8]);
+          id(xye_c4_b09_esp_profile).publish_state(b[9]);
+          id(xye_c4_b10_protection_flags).publish_state(b[10]);
+          id(xye_c4_b11_coil_inlet_raw).publish_state(b[11]);
+          id(xye_c4_b12_coil_outlet_raw).publish_state(b[12]);
+          id(xye_c4_b13_discharge_raw).publish_state(b[13]);
+          id(xye_c4_b14_expansion_valve_raw).publish_state(b[14]);
+          id(xye_c4_b16_system_status).publish_state(b[16]);
+          id(xye_c4_b17_target_fan).publish_state(b[17]);
+          id(xye_c4_b18_target_temp_raw).publish_state(b[18]);
+          id(xye_c4_b19_20_engineering_be).publish_state(((uint16_t)b[19] << 8) | b[20]);
+          id(xye_c4_b21_outdoor_temp_raw).publish_state(b[21]);
+          id(xye_c4_b24_static_pressure).publish_state(b[24]);
+          id(xye_c4_b26_compressor_subsystem).publish_state(b[26]);
+          id(xye_c4_b27_outdoor_fan_subsystem).publish_state(b[27]);
+          id(xye_c4_b28_4way_subsystem).publish_state(b[28]);
+          id(xye_c4_b29_inverter_subsystem).publish_state(b[29]);
