@@ -1,0 +1,44 @@
+# One-click ACiQ / Midea XYE diagnostic snapshot helper
+#
+# Requires examples/aciq-diagnostics.yaml to be loaded first. It creates:
+#   - button.capture_xye_snapshot
+#   - text_sensor.xye_snapshot
+#
+# Press the button after each test state settles. The latest important values
+# are condensed into a single copy/paste-friendly line and also written to the
+# ESPHome log as "XYE SNAPSHOT: ...".
+
+text_sensor:
+  - platform: template
+    id: xye_snapshot
+    name: "XYE Snapshot"
+    icon: mdi:clipboard-text
+    update_interval: never
+
+button:
+  - platform: template
+    id: xye_capture_snapshot
+    name: "Capture XYE Snapshot"
+    icon: mdi:camera-outline
+    on_press:
+      - lambda: |-
+          char buf[255];
+          snprintf(
+            buf,
+            sizeof(buf),
+            "OP=%s | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | EEV=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4SYS=%.0f | T4RAW=%.0f",
+            id(xye_operation_mode_text).state.c_str(),
+            id(xye_actual_fan_mode_text).state.c_str(),
+            id(xye_physical_fan_speed_text).state.c_str(),
+            id(xye_target_fan_mode_text).state.c_str(),
+            id(xye_c0_b19_compressor_flag).state,
+            id(xye_c0_candidate_eev_le).state,
+            id(xye_c4_b19_20_engineering_be).state,
+            id(xye_c4_b08_compressor_flags).state,
+            id(xye_c4_b10_protection_flags).state,
+            id(xye_c4_b16_system_status).state,
+            id(xye_c4_b21_outdoor_temp_raw).state
+          );
+
+          id(xye_snapshot).publish_state(buf);
+          ESP_LOGI("xye_snapshot", "XYE SNAPSHOT: %s", buf);
