@@ -5,10 +5,14 @@
 # raw-first: uncertain fields stay named by absolute byte position until they
 # are validated against controlled operating-state captures.
 #
+# Readable companion entities are also published for fields whose encodings
+# are already documented/observed well enough to interpret safely. Raw values
+# remain available alongside them so no evidence is lost.
+#
 # Usage:
 #   1. In your midea_xye climate entry, add:
 #        id: heatpump_xye
-#   2. Merge the sensor: and interval: sections below into your ESPHome node.
+#   2. Include this file as an ESPHome package.
 #   3. Keep the component polling C0/C4 normally (period: 1s is fine).
 #
 # The interval computes a small FNV-1a fingerprint of bytes 0..29 and only
@@ -248,6 +252,44 @@ sensor:
     entity_category: diagnostic
     update_interval: never
 
+# ---------- Human-readable companion entities ----------
+text_sensor:
+  - platform: template
+    id: xye_operation_mode_text
+    name: "XYE Operation Mode"
+    icon: mdi:hvac
+    entity_category: diagnostic
+    update_interval: never
+
+  - platform: template
+    id: xye_actual_fan_mode_text
+    name: "XYE Actual Fan Mode"
+    icon: mdi:fan
+    entity_category: diagnostic
+    update_interval: never
+
+  - platform: template
+    id: xye_physical_fan_speed_text
+    name: "XYE Physical Fan Speed"
+    icon: mdi:fan-speed-1
+    entity_category: diagnostic
+    update_interval: never
+
+  - platform: template
+    id: xye_target_fan_mode_text
+    name: "XYE Target Fan Mode"
+    icon: mdi:fan-auto
+    entity_category: diagnostic
+    update_interval: never
+
+binary_sensor:
+  - platform: template
+    id: xye_actual_fan_auto
+    name: "XYE Actual Fan Auto"
+    icon: mdi:fan-auto
+    entity_category: diagnostic
+
+
 globals:
   - id: xye_diag_last_c0_hash
     type: uint32_t
@@ -298,6 +340,61 @@ interval:
             id(xye_c0_b28_unknown5).publish_state(b[28]);
             id(xye_c0_b29_unknown6).publish_state(b[29]);
             id(xye_c0_candidate_eev_le).publish_state((uint16_t)b[28] | ((uint16_t)b[29] << 8));
+
+            // Human-readable operation mode. Unknown encodings remain visibly raw.
+            switch (b[8]) {
+              case 0x00: id(xye_operation_mode_text).publish_state("OFF"); break;
+              case 0x80: id(xye_operation_mode_text).publish_state("AUTO"); break;
+              case 0x81: id(xye_operation_mode_text).publish_state("FAN ONLY"); break;
+              case 0x82: id(xye_operation_mode_text).publish_state("DRY"); break;
+              case 0x84: id(xye_operation_mode_text).publish_state("HEAT"); break;
+              case 0x88: id(xye_operation_mode_text).publish_state("COOL"); break;
+              case 0x91: id(xye_operation_mode_text).publish_state("AUTO (ALT 0x91)"); break;
+              default: {
+                char s[20];
+                snprintf(s, sizeof(s), "UNKNOWN 0x%02X", b[8]);
+                id(xye_operation_mode_text).publish_state(s);
+                break;
+              }
+            }
+
+            const bool fan_auto = (b[9] & 0x80) != 0;
+            const uint8_t fan_phys = b[9] & 0x0F;
+            id(xye_actual_fan_auto).publish_state(fan_auto);
+
+            switch (fan_phys) {
+              case 0x00: id(xye_physical_fan_speed_text).publish_state("OFF"); break;
+              case 0x01: id(xye_physical_fan_speed_text).publish_state("HIGH"); break;
+              case 0x02: id(xye_physical_fan_speed_text).publish_state("MEDIUM"); break;
+              case 0x03: id(xye_physical_fan_speed_text).publish_state("LOW (ALT 0x03)"); break;
+              case 0x04: id(xye_physical_fan_speed_text).publish_state("LOW"); break;
+              default: {
+                char s[20];
+                snprintf(s, sizeof(s), "UNKNOWN 0x%02X", fan_phys);
+                id(xye_physical_fan_speed_text).publish_state(s);
+                break;
+              }
+            }
+
+            if (fan_auto) {
+              switch (fan_phys) {
+                case 0x00: id(xye_actual_fan_mode_text).publish_state("AUTO / IDLE"); break;
+                case 0x01: id(xye_actual_fan_mode_text).publish_state("AUTO + HIGH"); break;
+                case 0x02: id(xye_actual_fan_mode_text).publish_state("AUTO + MEDIUM"); break;
+                case 0x03: id(xye_actual_fan_mode_text).publish_state("AUTO + LOW (ALT)"); break;
+                case 0x04: id(xye_actual_fan_mode_text).publish_state("AUTO + LOW"); break;
+                default: id(xye_actual_fan_mode_text).publish_state("AUTO + UNKNOWN"); break;
+              }
+            } else {
+              switch (fan_phys) {
+                case 0x00: id(xye_actual_fan_mode_text).publish_state("OFF"); break;
+                case 0x01: id(xye_actual_fan_mode_text).publish_state("HIGH"); break;
+                case 0x02: id(xye_actual_fan_mode_text).publish_state("MEDIUM"); break;
+                case 0x03: id(xye_actual_fan_mode_text).publish_state("LOW (ALT)"); break;
+                case 0x04: id(xye_actual_fan_mode_text).publish_state("LOW"); break;
+                default: id(xye_actual_fan_mode_text).publish_state("UNKNOWN"); break;
+              }
+            }
             return;
           }
 
@@ -323,3 +420,33 @@ interval:
           id(xye_c4_b27_outdoor_fan_subsystem).publish_state(b[27]);
           id(xye_c4_b28_4way_subsystem).publish_state(b[28]);
           id(xye_c4_b29_inverter_subsystem).publish_state(b[29]);
+
+          // C4 byte 17 is the commanded/target fan setting. It can remain
+          // AUTO while C0 reports the actual physical fan speed underneath it.
+          const bool target_auto = (b[17] & 0x80) != 0;
+          const uint8_t target_speed = b[17] & 0x0F;
+          if (target_auto && target_speed == 0) {
+            id(xye_target_fan_mode_text).publish_state("AUTO");
+          } else if (target_auto) {
+            switch (target_speed) {
+              case 0x01: id(xye_target_fan_mode_text).publish_state("AUTO + HIGH"); break;
+              case 0x02: id(xye_target_fan_mode_text).publish_state("AUTO + MEDIUM"); break;
+              case 0x03: id(xye_target_fan_mode_text).publish_state("AUTO + LOW (ALT)"); break;
+              case 0x04: id(xye_target_fan_mode_text).publish_state("AUTO + LOW"); break;
+              default: id(xye_target_fan_mode_text).publish_state("AUTO + UNKNOWN"); break;
+            }
+          } else {
+            switch (target_speed) {
+              case 0x00: id(xye_target_fan_mode_text).publish_state("OFF"); break;
+              case 0x01: id(xye_target_fan_mode_text).publish_state("HIGH"); break;
+              case 0x02: id(xye_target_fan_mode_text).publish_state("MEDIUM"); break;
+              case 0x03: id(xye_target_fan_mode_text).publish_state("LOW (ALT)"); break;
+              case 0x04: id(xye_target_fan_mode_text).publish_state("LOW"); break;
+              default: {
+                char s[20];
+                snprintf(s, sizeof(s), "UNKNOWN 0x%02X", b[17]);
+                id(xye_target_fan_mode_text).publish_state(s);
+                break;
+              }
+            }
+          }
