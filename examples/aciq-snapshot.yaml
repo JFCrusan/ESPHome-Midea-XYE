@@ -28,9 +28,11 @@
 # C0 AUTO was observed as 0x98 on this unit. Raw values remain in snapshots so
 # future captures can challenge these interpretations rather than hiding them.
 #
-# C0 B28/B29 remains a refrigeration-control candidate only. It modulates in
-# COOL/DRY/AUTO but remained parked at 480 throughout observed HEAT operation,
-# so it is intentionally not promoted to a confirmed EEV-position label.
+# C0 B28/B29 is now treated as a high-confidence little-endian EEV position in
+# steps. Long-history captures show smooth crossings through the 255/256 byte
+# boundary, stepwise motion to/from a hard 480-step endpoint, and repeatable
+# movement around compressor startup/shutdown and refrigeration housekeeping.
+# The exact physical valve represented remains provisional.
 
 globals:
   - id: xye_snapshot_sequence
@@ -77,7 +79,7 @@ button:
           snprintf(
             headline,
             sizeof(headline),
-            "#%lu | OP=%s | C0OP=0x%02X | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | RCAND=%.0f | B28=%.0f | B29=%.0f | ENG=%.0f | C4CF=%.0f | C4PF=%.0f | C4MODE=0x%02X | T4RAW=%.0f",
+            "#%lu | OP=%s | C0OP=0x%02X | AFAN=%s | PFAN=%s | TFAN=%s | COMP=%.0f | EEV=%.0f | B28=%.0f | B29=%.0f | META=%.0f | C4B08=%.0f | C4B10=%.0f | C4MODE=0x%02X | T4RAW=%.0f",
             seq,
             id(xye_operation_mode_text).state.c_str(),
             (unsigned int) lroundf(id(xye_c0_b08_operation_mode).state),
@@ -99,7 +101,7 @@ button:
           snprintf(
             c0,
             sizeof(c0),
-            "#%lu C0 | B06=%.0f B07=%.0f B08=%.0f B09=%.0f B10=%.0f B15=%.0f B16=%.0f B19=%.0f B20=%.0f B21=%.0f ERR=%.0f PROT=%.0f B26=%.0f B27=%.0f B28=%.0f B29=%.0f RCAND=%.0f",
+            "#%lu C0 | B06=%.0f B07=%.0f B08=%.0f B09=%.0f B10=%.0f B15=%.0f B16=%.0f B19=%.0f B20=%.0f B21=%.0f ERR=%.0f PROT=%.0f B26=%.0f B27=%.0f B28=%.0f B29=%.0f EEV=%.0f",
             seq,
             id(xye_c0_b06_unknown1).state,
             id(xye_c0_b07_capabilities).state,
@@ -124,7 +126,7 @@ button:
           snprintf(
             c4,
             sizeof(c4),
-            "#%lu C4 | B06=%.0f B07=%.0f B08=%.0f B09=%.0f B10=%.0f B11=%.0f B12=%.0f B13=%.0f B14=%.0f B16=%.0f B17=%.0f B18=%.0f ENG=%.0f B21=%.0f B24=%.0f B26=%.0f B27=%.0f B28=%.0f B29=%.0f",
+            "#%lu C4 | B06=%.0f B07=%.0f B08=%.0f B09=%.0f B10=%.0f B11=%.0f B12=%.0f B13=%.0f B14=%.0f B16=%.0f B17=%.0f B18=%.0f META=%.0f B21=%.0f B24=%.0f B26=%.0f B27=%.0f B28=%.0f B29=%.0f",
             seq,
             id(xye_c4_b06_indoor_fan_pwm).state,
             id(xye_c4_b07_indoor_fan_tach).state,
