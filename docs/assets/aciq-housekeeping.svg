@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">ACiQ Extreme Plus recurring Housekeeping signature</title>
+<desc id="desc">A representative cooling-run event shows the EEV opening sharply at about 120.5 minutes of compressor runtime followed by a compressor power surge. Five observed events cluster tightly around 120.515 minutes.</desc>
+<style>
+  text { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#182230; }
+  .title { font-size:30px; font-weight:700; }
+  .sub { font-size:16px; fill:#52606d; }
+  .panel { fill:#f7f9fc; stroke:#d9e2ec; stroke-width:1; }
+  .grid { stroke:#d9e2ec; stroke-width:1; }
+  .axis { font-size:13px; fill:#687585; }
+  .label { font-size:16px; font-weight:650; }
+  .note { font-size:14px; fill:#52606d; }
+  .eev { fill:none; stroke:#275dad; stroke-width:4; stroke-linejoin:round; stroke-linecap:round; }
+  .power { fill:none; stroke:#d97706; stroke-width:4; stroke-linejoin:round; stroke-linecap:round; }
+  .marker { stroke:#8b5cf6; stroke-width:2; stroke-dasharray:7 6; }
+  .pill { fill:#eef2ff; stroke:#c7d2fe; }
+  .pilltext { font-size:15px; font-weight:650; fill:#4c1d95; }
+  .dot { fill:#8b5cf6; }
+  .mean { stroke:#4c1d95; stroke-width:2; }
+</style>
+<rect width="1200" height="760" fill="#ffffff"/>
+<text x="60" y="58" class="title">Recurring Housekeeping signature</text>
+<text x="60" y="88" class="sub">Representative cooling event from Home Assistant history · EEV and independent compressor power</text>
+<rect x="55" y="115" width="1090" height="225" rx="14" class="panel"/>
+<text x="75" y="143" class="label">EEV position</text>
+<text x="1115" y="143" text-anchor="end" class="note">steps</text><line x1="90" y1="317.7" x2="1110" y2="317.7" class="grid"/><text x="80" y="321.7" text-anchor="end" class="axis">250</text><line x1="90" y1="231.4" x2="1110" y2="231.4" class="grid"/><text x="80" y="235.4" text-anchor="end" class="axis">300</text><line x1="90" y1="145.0" x2="1110" y2="145.0" class="grid"/><text x="80" y="149.0" text-anchor="end" class="axis">350</text><line x1="90.0" y1="145" x2="90.0" y2="335" class="grid"/><line x1="345.0" y1="145" x2="345.0" y2="335" class="grid"/><line x1="600.0" y1="145" x2="600.0" y2="335" class="grid"/><line x1="855.0" y1="145" x2="855.0" y2="335" class="grid"/><line x1="1110.0" y1="145" x2="1110.0" y2="335" class="grid"/><polyline points="498.4,300.5 599.2,276.4 601.4,176.2 694.9,200.4 697.0,309.1 1077.7,302.2" class="eev"/><line x1="600.0" y1="145" x2="600.0" y2="335" class="marker"/><rect x="615.0" y="160" width="218" height="34" rx="17" class="pill"/><text x="724.0" y="182" text-anchor="middle" class="pilltext">EEV jump at 120.51 min</text><rect x="55" y="375" width="1090" height="225" rx="14" class="panel"/>
+<text x="75" y="403" class="label">Compressor power</text>
+<text x="1115" y="403" text-anchor="end" class="note">W · independent meter</text><line x1="90" y1="595.0" x2="1110" y2="595.0" class="grid"/><text x="80" y="599.0" text-anchor="end" class="axis">0</text><line x1="90" y1="521.9" x2="1110" y2="521.9" class="grid"/><text x="80" y="525.9" text-anchor="end" class="axis">1000</text><line x1="90" y1="448.8" x2="1110" y2="448.8" class="grid"/><text x="80" y="452.8" text-anchor="end" class="axis">2000</text><line x1="90.0" y1="405" x2="90.0" y2="595" class="grid"/><line x1="345.0" y1="405" x2="345.0" y2="595" class="grid"/><line x1="600.0" y1="405" x2="600.0" y2="595" class="grid"/><line x1="855.0" y1="405" x2="855.0" y2="595" class="grid"/><line x1="1110.0" y1="405" x2="1110.0" y2="595" class="grid"/><polyline points="99.0,562.1 162.8,561.8 226.4,562.4 290.2,562.2 353.8,561.9 417.7,562.1 481.3,562.2 545.1,561.3 608.7,555.0 672.6,527.8 736.4,424.6 800.2,539.8 864.0,549.5 927.7,556.1 991.5,561.1 1055.1,561.5" class="power"/><line x1="600.0" y1="405" x2="600.0" y2="595" class="marker"/><text x="618.0" y="575" class="note">~450 W baseline to 2.33 kW peak</text><text x="90.0" y="620" text-anchor="middle" class="axis">-8 min</text><text x="345.0" y="620" text-anchor="middle" class="axis">-4 min</text><text x="600.0" y="620" text-anchor="middle" class="axis">0 min</text><text x="855.0" y="620" text-anchor="middle" class="axis">+4 min</text><text x="1110.0" y="620" text-anchor="middle" class="axis">+8 min</text><text x="60" y="675" class="label">Five long cooling runs</text>
+<text x="60" y="700" class="note">First event: 120.499–120.533 min after compressor start</text>
+<text x="60" y="724" class="note">Mean 120.515 min · total spread ~2.0 seconds</text>
+<line x1="760" y1="680" x2="1110" y2="680" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/><line x1="935.3" y1="658" x2="935.3" y2="702" class="mean"/><text x="935.3" y="650" text-anchor="middle" class="axis">mean 120.515</text><circle cx="898.8" cy="680" r="7" class="dot"/><circle cx="1025.1" cy="680" r="7" class="dot"/><circle cx="857.0" cy="680" r="7" class="dot"/><circle cx="1024.7" cy="680" r="7" class="dot"/><circle cx="870.6" cy="680" r="7" class="dot"/><text x="760" y="712" text-anchor="start" class="axis">120.48</text><text x="1110" y="712" text-anchor="end" class="axis">120.55 min</text></svg>
