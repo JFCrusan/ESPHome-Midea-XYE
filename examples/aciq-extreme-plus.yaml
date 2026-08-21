@@ -1,4 +1,4 @@
-# ACiQ Extreme+ Home Assistant sensor profile
+# ACiQ Extreme+ Home Assistant add-on profile
 #
 # Tested on:
 #   - ACIQ-48-PAH air handler
@@ -7,127 +7,61 @@
 # Requires the midea_xye climate entry to have:
 #   id: heatpump_xye
 #
-# This is the clean, user-facing layer. It exposes fields with strong
-# observational support while leaving raw byte capture to the separate
-# aciq-diagnostics.yaml / aciq-byte-watch.yaml research packages.
+# IMPORTANT:
+# The generic midea_xye component already exposes the useful temperature,
+# compressor, defrost, error, protection, and fan-speed sensors. Configure those
+# directly in the climate block with friendly names (see examples/README.md).
 #
-# Sensor-temperature encoding:
-#   Celsius = (raw - 40) / 2
+# This package intentionally adds only ACiQ-specific / comparison-friendly
+# entities that the generic component does not already expose:
+#   - EEV Position
+#   - Actual Fan Mode
+#   - Target Fan Mode
+#   - Bus Mode (diagnostic)
+#   - Operating State (diagnostic)
 #
 # C0 bytes 28-29 are combined little-endian. On the tested Extreme+ system the
-# resulting 0..480-ish value behaves like a stepper-driven electronic expansion
-# valve position. The physical valve identity remains provisional.
+# resulting value behaves as an electronic expansion-valve position in steps.
+# The exact physical valve identity remains provisional.
 #
-# Home Assistant states are published only when the corresponding C0/C4 frame
-# changes, avoiding repeated identical updates every poll.
+# States are published only when the corresponding C0/C4 frame changes.
 
 sensor:
   - platform: template
-    id: aciq_room_temperature_t1
-    name: "ACiQ Room Temperature T1"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    state_class: measurement
-    update_interval: never
-
-  - platform: template
-    id: aciq_indoor_coil_t2a
-    name: "ACiQ Indoor Coil T2A"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    state_class: measurement
-    update_interval: never
-
-  - platform: template
-    id: aciq_indoor_coil_t2b
-    name: "ACiQ Indoor Coil T2B"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    state_class: measurement
-    update_interval: never
-
-  - platform: template
-    id: aciq_outdoor_coil_t3
-    name: "ACiQ Outdoor Coil T3"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    state_class: measurement
-    update_interval: never
-
-  - platform: template
-    id: aciq_outdoor_ambient_t4
-    name: "ACiQ Outdoor Ambient T4"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    state_class: measurement
-    update_interval: never
-
-  - platform: template
     id: aciq_eev_position
-    name: "ACiQ EEV Position"
+    name: "EEV Position"
     unit_of_measurement: "steps"
     icon: mdi:valve
     accuracy_decimals: 0
     state_class: measurement
     update_interval: never
 
-  - platform: template
-    id: aciq_error_flags
-    name: "ACiQ Error Flags Raw"
-    icon: mdi:alert-circle-outline
-    accuracy_decimals: 0
-    entity_category: diagnostic
-    update_interval: never
-
-  - platform: template
-    id: aciq_protection_flags
-    name: "ACiQ Protection Flags Raw"
-    icon: mdi:shield-alert-outline
-    accuracy_decimals: 0
-    entity_category: diagnostic
-    update_interval: never
-
 text_sensor:
   - platform: template
-    id: aciq_bus_mode
-    name: "ACiQ Bus Mode"
-    icon: mdi:hvac
-    update_interval: never
-
-  - platform: template
-    id: aciq_c4_operating_state
-    name: "ACiQ C4 Operating State"
-    icon: mdi:state-machine
-    entity_category: diagnostic
-    update_interval: never
-
-  - platform: template
     id: aciq_actual_fan
-    name: "ACiQ Actual Fan"
+    name: "Actual Fan Mode"
     icon: mdi:fan
     update_interval: never
 
   - platform: template
     id: aciq_target_fan
-    name: "ACiQ Target Fan"
+    name: "Target Fan Mode"
     icon: mdi:fan-auto
     update_interval: never
 
-binary_sensor:
   - platform: template
-    id: aciq_compressor_running
-    name: "ACiQ Compressor Running"
-    icon: mdi:engine
+    id: aciq_bus_mode
+    name: "Bus Mode"
+    icon: mdi:hvac
+    entity_category: diagnostic
+    update_interval: never
 
   - platform: template
-    id: aciq_fan_auto
-    name: "ACiQ Fan Auto"
-    icon: mdi:fan-auto
+    id: aciq_c4_operating_state
+    name: "Operating State"
+    icon: mdi:state-machine
+    entity_category: diagnostic
+    update_interval: never
 
 globals:
   - id: aciq_profile_last_c0_hash
@@ -156,10 +90,6 @@ interval:
             hash *= 16777619u;
           }
 
-          auto decode_temperature = [](uint8_t raw) -> float {
-            return (static_cast<float>(raw) - 40.0f) / 2.0f;
-          };
-
           auto publish_fan = [](auto *out, uint8_t raw, bool show_auto_physical) {
             const bool auto_mode = (raw & 0x80) != 0;
             const uint8_t speed = raw & 0x0F;
@@ -169,7 +99,7 @@ interval:
               case 0x00: speed_name = "OFF"; break;
               case 0x01: speed_name = "HIGH"; break;
               case 0x02: speed_name = "MEDIUM"; break;
-              case 0x03: speed_name = "LOW"; break;
+              case 0x03:
               case 0x04: speed_name = "LOW"; break;
               default: break;
             }
@@ -202,25 +132,11 @@ interval:
             if (hash == id(aciq_profile_last_c0_hash)) return;
             id(aciq_profile_last_c0_hash) = hash;
 
-            id(aciq_room_temperature_t1).publish_state(decode_temperature(b[11]));
-            id(aciq_indoor_coil_t2a).publish_state(decode_temperature(b[12]));
-            id(aciq_indoor_coil_t2b).publish_state(decode_temperature(b[13]));
-            id(aciq_outdoor_coil_t3).publish_state(decode_temperature(b[14]));
-
             const uint16_t eev =
                 static_cast<uint16_t>(b[28]) |
                 (static_cast<uint16_t>(b[29]) << 8);
             id(aciq_eev_position).publish_state(eev);
 
-            id(aciq_error_flags).publish_state(
-                static_cast<uint16_t>(b[22]) |
-                (static_cast<uint16_t>(b[23]) << 8));
-            id(aciq_protection_flags).publish_state(
-                static_cast<uint16_t>(b[24]) |
-                (static_cast<uint16_t>(b[25]) << 8));
-
-            id(aciq_compressor_running).publish_state((b[19] & 0x01) != 0);
-            id(aciq_fan_auto).publish_state((b[9] & 0x80) != 0);
             publish_fan(id(aciq_actual_fan), b[9], true);
 
             switch (b[8]) {
@@ -248,7 +164,6 @@ interval:
           if (hash == id(aciq_profile_last_c4_hash)) return;
           id(aciq_profile_last_c4_hash) = hash;
 
-          id(aciq_outdoor_ambient_t4).publish_state(decode_temperature(b[21]));
           publish_fan(id(aciq_target_fan), b[17], false);
 
           switch (b[16]) {
