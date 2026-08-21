@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="710" viewBox="0 0 1200 710" role="img" aria-labelledby="title2 desc2">
+<title id="title2">ACiQ Extreme Plus XYE field validation summary</title>
+<desc id="desc2">Summary of field mappings validated against thermostat history, independent temperature sensors, and compressor power.</desc>
+<style>
+ text { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; fill:#182230; }
+ .title { font-size:30px; font-weight:700; }
+ .sub { font-size:16px; fill:#52606d; }
+ .card { fill:#f8fafc; stroke:#d9e2ec; }
+ .kicker { font-size:14px; fill:#64748b; font-weight:650; letter-spacing:.4px; }
+ .metric { font-size:38px; font-weight:750; }
+ .body { font-size:15px; fill:#52606d; }
+ .tagvh { fill:#dcfce7; stroke:#86efac; }
+ .tagh { fill:#dbeafe; stroke:#93c5fd; }
+ .tagu { fill:#f1f5f9; stroke:#cbd5e1; }
+ .tagtext { font-size:13px; font-weight:700; }
+ .boxhi { fill:#eff6ff; stroke:#93c5fd; }
+ .unknown { fill:#f8fafc; stroke:#cbd5e1; }
+ .boxtext { font-size:12.5px; font-weight:650; }
+ .tiny { font-size:12px; fill:#64748b; }
+</style>
+<rect width="1200" height="710" fill="#ffffff"/>
+<text x="55" y="58" class="title">What the real logs validate</text>
+<text x="55" y="88" class="sub">ACiQ Extreme+ · XYE mapped against thermostat history, independent temperatures and electrical power</text>
+<rect x="55" y="120" width="255" height="150" rx="14" class="card"/><text x="78" y="150" class="kicker">THERMOSTAT TEMP</text><text x="78" y="198" class="metric">0.999</text><text x="78" y="224" class="body">correlation vs thermostat</text><text x="78" y="248" class="body">0.39 °F mean absolute error</text><rect x="330" y="120" width="255" height="150" rx="14" class="card"/><text x="353" y="150" class="kicker">OUTSIDE TEMP</text><text x="353" y="198" class="metric">0.961</text><text x="353" y="224" class="body">correlation vs separate sensor</text><text x="353" y="248" class="body">+5.55 °F average local bias</text><rect x="605" y="120" width="255" height="150" rx="14" class="card"/><text x="628" y="150" class="kicker">EEV POSITION</text><text x="628" y="198" class="metric">177–480</text><text x="628" y="224" class="body">observed step range</text><text x="628" y="248" class="body">cleanly crosses 255 / 256</text><rect x="880" y="120" width="265" height="150" rx="14" class="card"/><text x="903" y="150" class="kicker">HOUSEKEEPING</text><text x="903" y="198" class="metric">120.515</text><text x="903" y="224" class="body">minutes · mean first event</text><text x="903" y="248" class="body">five observed long cooling runs</text><text x="55" y="315" class="kicker">C0 BASIC QUERY — HIGH-VALUE FIELDS</text><rect x="55" y="338" width="110" height="72" rx="10" class="boxhi"/><text x="67" y="362" class="tiny">B08</text><text x="67" y="386" class="boxtext">Mode</text><rect x="173" y="338" width="118" height="72" rx="10" class="boxhi"/><text x="185" y="362" class="tiny">B09</text><text x="185" y="386" class="boxtext">Actual fan</text><rect x="299" y="338" width="112" height="72" rx="10" class="boxhi"/><text x="311" y="362" class="tiny">B10</text><text x="311" y="386" class="boxtext">Setpoint</text><rect x="419" y="338" width="125" height="72" rx="10" class="boxhi"/><text x="431" y="362" class="tiny">B11</text><text x="431" y="386" class="boxtext">Thermostat</text><rect x="552" y="338" width="116" height="72" rx="10" class="boxhi"/><text x="564" y="362" class="tiny">B12</text><text x="564" y="386" class="boxtext">Coil inlet</text><rect x="676" y="338" width="118" height="72" rx="10" class="boxhi"/><text x="688" y="362" class="tiny">B13</text><text x="688" y="386" class="boxtext">Coil outlet</text><rect x="802" y="338" width="120" height="72" rx="10" class="boxhi"/><text x="814" y="362" class="tiny">B14</text><text x="814" y="386" class="boxtext">Outside coil</text><rect x="930" y="338" width="124" height="72" rx="10" class="boxhi"/><text x="942" y="362" class="tiny">B19</text><text x="942" y="386" class="boxtext">Compressor</text><rect x="1062" y="338" width="130" height="72" rx="10" class="boxhi"/><text x="1074" y="362" class="tiny">B28–29</text><text x="1074" y="386" class="boxtext">EEV steps</text><text x="55" y="455" class="kicker">C4 EXTENDED QUERY — USEFUL ANCHORS AND STATIC TERRITORY</text><rect x="55" y="478" width="155" height="72" rx="10" class="boxhi"/><text x="67" y="502" class="tiny">B16</text><text x="67" y="526" class="boxtext">Operating state</text><rect x="219" y="478" width="135" height="72" rx="10" class="boxhi"/><text x="231" y="502" class="tiny">B17</text><text x="231" y="526" class="boxtext">Target fan</text><rect x="363" y="478" width="135" height="72" rx="10" class="boxhi"/><text x="375" y="502" class="tiny">B18</text><text x="375" y="526" class="boxtext">Target temp</text><rect x="507" y="478" width="165" height="72" rx="10" class="boxhi"/><text x="519" y="502" class="tiny">B19–20</text><text x="519" y="526" class="boxtext">0xBCD6 metadata</text><rect x="681" y="478" width="145" height="72" rx="10" class="boxhi"/><text x="693" y="502" class="tiny">B21</text><text x="693" y="526" class="boxtext">Outside temp</text><rect x="835" y="478" width="205" height="72" rx="10" class="unknown"/><text x="847" y="502" class="tiny">B26–29</text><text x="847" y="526" class="boxtext">0x80 static quartet</text><rect x="55" y="592" width="1090" height="82" rx="14" class="card"/>
+<text x="78" y="622" class="kicker">INTERPRETATION POLICY</text>
+<text x="78" y="648" class="body">Ship the best repeatable mapping, retain raw bytes for falsification, and revise labels when better evidence arrives.</text>
+<rect x="870" y="610" width="104" height="30" rx="15" class="tagvh"/><text x="922" y="630" text-anchor="middle" class="tagtext">Very high</text>
+<rect x="982" y="610" width="70" height="30" rx="15" class="tagh"/><text x="1017" y="630" text-anchor="middle" class="tagtext">High</text>
+<rect x="1060" y="610" width="62" height="30" rx="15" class="tagu"/><text x="1091" y="630" text-anchor="middle" class="tagtext">Raw</text>
+</svg>
