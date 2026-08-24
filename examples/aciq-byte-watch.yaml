@@ -1,0 +1,117 @@
+# Temporary ACiQ / Midea XYE payload byte watch
+#
+# Complements examples/aciq-diagnostics.yaml by exposing the remaining C0/C4
+# payload bytes that are not already published as individual diagnostic
+# entities. Together, the two packages cover every payload byte B06..B29.
+#
+# This package is intentionally temporary. Remove it from the ESPHome packages
+# list and rebuild when the reverse-engineering campaign is finished.
+#
+# Values are published only when the individual byte changes, so Home Assistant
+# history becomes a low-noise event recorder rather than receiving repeated
+# identical states every poll cycle.
+
+sensor:
+  # ---------- C0 bytes not already exposed by aciq-diagnostics.yaml ----------
+  - platform: template
+    id: xye_watch_c0_b11
+    name: "XYE Watch C0 B11 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c0_b12
+    name: "XYE Watch C0 B12 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c0_b13
+    name: "XYE Watch C0 B13 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c0_b14
+    name: "XYE Watch C0 B14 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c0_b17
+    name: "XYE Watch C0 B17 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c0_b18
+    name: "XYE Watch C0 B18 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+
+  # ---------- C4 bytes not already exposed by aciq-diagnostics.yaml ----------
+  - platform: template
+    id: xye_watch_c4_b15
+    name: "XYE Watch C4 B15 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c4_b22
+    name: "XYE Watch C4 B22 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c4_b23
+    name: "XYE Watch C4 B23 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+  - platform: template
+    id: xye_watch_c4_b25
+    name: "XYE Watch C4 B25 Raw"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: never
+
+interval:
+  - interval: 200ms
+    then:
+      - lambda: |-
+          const uint8_t cmd = static_cast<uint8_t>(id(heatpump_xye).rx_data.message.frame.header.command);
+          if (cmd != 0xC0 && cmd != 0xC4) return;
+
+          const uint8_t *b = id(heatpump_xye).rx_data.raw;
+
+          // Keep byte-local history in RAM so we only publish actual changes.
+          // 0xFFFF is an impossible uint8_t value and acts as "never seen".
+          static uint16_t c0_last[6] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+          static uint16_t c4_last[4] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+
+          if (cmd == 0xC0) {
+            const uint8_t pos[6] = {11, 12, 13, 14, 17, 18};
+            sensor::Sensor *out[6] = {
+              id(xye_watch_c0_b11), id(xye_watch_c0_b12), id(xye_watch_c0_b13),
+              id(xye_watch_c0_b14), id(xye_watch_c0_b17), id(xye_watch_c0_b18)
+            };
+            for (int i = 0; i < 6; i++) {
+              if (c0_last[i] != b[pos[i]]) {
+                c0_last[i] = b[pos[i]];
+                out[i]->publish_state(b[pos[i]]);
+              }
+            }
+          } else {
+            const uint8_t pos[4] = {15, 22, 23, 25};
+            sensor::Sensor *out[4] = {
+              id(xye_watch_c4_b15), id(xye_watch_c4_b22),
+              id(xye_watch_c4_b23), id(xye_watch_c4_b25)
+            };
+            for (int i = 0; i < 4; i++) {
+              if (c4_last[i] != b[pos[i]]) {
+                c4_last[i] = b[pos[i]];
+                out[i]->publish_state(b[pos[i]]);
+              }
+            }
+          }
