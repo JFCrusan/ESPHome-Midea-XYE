@@ -1,5 +1,9 @@
 # ACiQ Extreme+ packages
 
+For a normal ACiQ Extreme+ installation, start with the dedicated quick-start guide:
+
+**[ACiQ Extreme+ + ESPHome / Home Assistant](ACIQ-EXTREME-PLUS.md)**
+
 The ACiQ work is split into a clean Home Assistant layer and optional reverse-engineering tools.
 
 ## Recommended Home Assistant setup
@@ -78,20 +82,20 @@ Example package configuration:
 packages:
   aciq_extreme_plus:
     url: https://github.com/JFCrusan/ESPHome-Midea-XYE
-    ref: aciq-diagnostics
+    ref: main
     files:
       - examples/aciq-extreme-plus.yaml
-    refresh: 5min
+    refresh: 1d
 ```
 
-While this work is under review, load the external component from the same branch:
+Load the external component from the same branch:
 
 ```yaml
 external_components:
   - source:
       type: git
       url: https://github.com/JFCrusan/ESPHome-Midea-XYE
-      ref: aciq-diagnostics
+      ref: main
     components:
       - midea_xye
 ```
@@ -124,7 +128,7 @@ During active reverse engineering:
 packages:
   aciq_packages:
     url: https://github.com/JFCrusan/ESPHome-Midea-XYE
-    ref: aciq-diagnostics
+    ref: main
     files:
       - examples/aciq-extreme-plus.yaml
       - examples/aciq-diagnostics.yaml
